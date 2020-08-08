@@ -1,9 +1,15 @@
-// Example 5 - Receive with start- and end-markers combined with parsing
+/**References:
+ * https://forum.arduino.cc/index.php?topic=396450.0
+ * https://www.youtube.com/watch?v=XCyRXMvVSCw
+ * https://www.instructables.com/id/MPU-6050-Tutorial-How-to-Program-MPU-6050-With-Ard/
+ */
+
 #include <Servo.h>
 
 // create servo object to control a servo
 Servo myservo;
 
+// defines position of wheel
 int pos;
 
 // desired character limit

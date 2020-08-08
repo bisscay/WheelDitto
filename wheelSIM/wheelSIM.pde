@@ -1,7 +1,12 @@
+/**  References:
+*    https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
+*    https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html
+*    https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels
+*/
 import processing.serial.*;
 
 // import toxiclib library to acces quaternion class ------------- To Be Deleted
-import toxi.geom.*;
+//import toxi.geom.*;
 
 // create object from serial class
 Serial myPort;
@@ -27,7 +32,7 @@ float CONE_DEPTH = 200;
 /////
 float[] q = {0, 0, 0, 0};//new float[4];
 // Quaternion initialized to unrotated state
-Quaternion quat = new Quaternion(1, 0, 0, 0);
+//Quaternion quat = new Quaternion(1, 0, 0, 0);
 
 void setup() {
   // window size
@@ -41,7 +46,7 @@ void setup() {
   // display serial port fot clarity/debugging
   println(Serial.list());
   // identify my mac's serial port
-  String portName = Serial.list()[2];
+  String portName = Serial.list()[0]; // 0 in linux | 2 on mac
   // define rate of data transfer
   myPort = new Serial(this, portName, 9600);
 }
