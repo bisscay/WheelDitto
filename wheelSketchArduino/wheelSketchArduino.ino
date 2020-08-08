@@ -5,6 +5,8 @@
  */
 
 #include <Servo.h>
+#include <Wire.h>
+#include <MPU6050.h>
 
 // create servo object to control a servo
 Servo myservo;
@@ -28,24 +30,69 @@ float mouseX = 0.0;
 
 boolean newData = false;
 
+/* FromAdruino Params */
+
+MPU6050 mpu;
+
+// Timers
+unsigned long timer = 0;
+float timeStep = 0.01;
+
+// Pitch, Roll and Yaw values
+float pitch = 0;
+float roll = 0;
+float yaw = 0;
+
 //============
 
 void setup() {
-  Serial.begin(9600);
-  // For Debuggin - Delte later -----------
-  /*
-    Serial.println("This demo expects 3 floating pieces of data");
-    Serial.println("Enter data in this style <37.6, 12.09, 24.7> ");
-    Serial.println();*/
-  // --------------------------------------
+  // initialize serial communications at a 115200 baud rate
+  Serial.begin(115200);
   // attach servo on pin 9 to servo object
   // i assume this sets the direction of the pin to output
   myservo.attach(9);
+
+  // initialize MPU6050
+  // output error for debugging if sensor is missing
+  while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
+  {
+    Serial.println("Could not find a valid MPU6050 sensor, check wiring!");
+    delay(500); 
+  }
+  // Calibrate gyroscope, the calibration must be at rest
+  mpu.calibrateGyro();
+  // Set threshold sensitivity. Default 3
+  mpu.setThreshold(3);
+  // Check settings for debugging
+  //checkSettings();
 }
 
 //============
 
 void loop() {
+  //
+  timer = millis();
+  // Read normalized values
+  Vector normGyro = mpu.readNormalizeGyro();
+  
+  // Calculate Pitch, Roll and Yaw
+  pitch = pitch + normGyro.YAxis * timeStep;
+  roll = roll + normGyro.XAxis * timeStep;
+  yaw = yaw + normGyro.ZAxis * timeStep;
+
+  // Ouput raw
+  Serial.print("[");
+  Serial.print(pitch);
+  Serial.print(",");
+  Serial.print(roll);
+  Serial.print(",");
+  Serial.print(yaw);
+  Serial.print("]");
+  
+  // wait to full timeStep period so we don't drive ourselves crazy
+  delay((timeStep*1000) - (millis() - timer));
+
+  
   recvWithStartEndMarkers();
   if (newData == true) {
     strcpy(tempChars, receivedChars);
@@ -87,6 +134,7 @@ void loop() {
 
     newData = false;
   }
+
 }
 
 // Check for the boundary markers that define new data i.e < >
@@ -153,12 +201,43 @@ void parseData() {      // split the recieved data into its parts
 
 //============
 
-void showParsedData() {
-  /*
-    Serial.print("X: ");
-    Serial.println(xAxis);
-    Serial.print("pMouseX: ");
-    Serial.println(pMouseX);
-    Serial.print("mouseX: ");
-    Serial.println(mouseX);*/
+/**
+ * Check settings for debugging
+ */
+void checkSettings()
+{
+  Serial.println();
+  
+  Serial.print(" * Sleep Mode:        ");
+  Serial.println(mpu.getSleepEnabled() ? "Enabled" : "Disabled");
+  
+  Serial.print(" * Clock Source:      ");
+  switch(mpu.getClockSource())
+  {
+    case MPU6050_CLOCK_KEEP_RESET:     Serial.println("Stops the clock and keeps the timing generator in reset"); break;
+    case MPU6050_CLOCK_EXTERNAL_19MHZ: Serial.println("PLL with external 19.2MHz reference"); break;
+    case MPU6050_CLOCK_EXTERNAL_32KHZ: Serial.println("PLL with external 32.768kHz reference"); break;
+    case MPU6050_CLOCK_PLL_ZGYRO:      Serial.println("PLL with Z axis gyroscope reference"); break;
+    case MPU6050_CLOCK_PLL_YGYRO:      Serial.println("PLL with Y axis gyroscope reference"); break;
+    case MPU6050_CLOCK_PLL_XGYRO:      Serial.println("PLL with X axis gyroscope reference"); break;
+    case MPU6050_CLOCK_INTERNAL_8MHZ:  Serial.println("Internal 8MHz oscillator"); break;
+  }
+  
+  Serial.print(" * Gyroscope:         ");
+  switch(mpu.getScale())
+  {
+    case MPU6050_SCALE_2000DPS:        Serial.println("2000 dps"); break;
+    case MPU6050_SCALE_1000DPS:        Serial.println("1000 dps"); break;
+    case MPU6050_SCALE_500DPS:         Serial.println("500 dps"); break;
+    case MPU6050_SCALE_250DPS:         Serial.println("250 dps"); break;
+  } 
+  
+  Serial.print(" * Gyroscope offsets: ");
+  Serial.print(mpu.getGyroOffsetX());
+  Serial.print(" / ");
+  Serial.print(mpu.getGyroOffsetY());
+  Serial.print(" / ");
+  Serial.println(mpu.getGyroOffsetZ());
+  
+  Serial.println();
 }

@@ -1,12 +1,9 @@
 /**  References:
-*    https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
-*    https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html
-*    https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels
-*/
+ *    https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
+ *    https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html
+ *    https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels
+ */
 import processing.serial.*;
-
-// import toxiclib library to acces quaternion class ------------- To Be Deleted
-//import toxi.geom.*;
 
 // create object from serial class
 Serial myPort;
@@ -18,21 +15,24 @@ float positionY = height-113; // define height of plane
 float scale = 15;
 // for generating vertex
 float ang = 0;
-// for whole shape rotation
-// will be an array that holds feed from the sensor to alter animation ------ TO DO !!!!!
-float [] sensorFeed = {0,0,0};
 // alters the ang in vertex
 int pts = 120;
 // defines the depth of the wheel
 float CONE_DEPTH = 200;
 
-// hold updates for quaternion from sensor
-/////
-///////////////////////////////////////// test with static values --------- To Be Deleted
-/////
-float[] q = {0, 0, 0, 0};//new float[4];
-// Quaternion initialized to unrotated state
-//Quaternion quat = new Quaternion(1, 0, 0, 0);
+/* ToProcessing Params */
+// data received from the serial port
+String sensorFeed = "";
+// for whole shape rotation
+float yaw, pitch, roll;
+// desired character limit
+final byte numChars = 32;
+// defines when a new data stream arives
+boolean newData = false;
+// to hold data recieved from serial port
+char[] receivedChars = new char[numChars];
+// temporary array for use when parsing
+char[] tempChars = new char[numChars];
 
 void setup() {
   // window size
@@ -44,11 +44,11 @@ void setup() {
   // hide cusor 
   //noCursor();
   // display serial port fot clarity/debugging
-  println(Serial.list());
+  //println(Serial.list());
   // identify my mac's serial port
   String portName = Serial.list()[0]; // 0 in linux | 2 on mac
   // define rate of data transfer
-  myPort = new Serial(this, portName, 9600);
+  myPort = new Serial(this, portName, 115200);
 }
 
 void draw() {
@@ -65,38 +65,40 @@ void draw() {
   // camera orientation
   //camera(0+mouseX,0+mouseY,1500, 0,0,0, 0,0.5,0);
   //camera(0,0,1500, 0,0,0, 0,0.5,0);
-  
-  /** To Be Deleted ------------------------------------------------------------------
-  // toxiclibs direct axis angle rotation from quaternion (No gimbal lock)
-  // (axis order [1, 3, 2] and inversion [-1, +1, +1] is a consequence of
-  // different coordinate system orientation assumptions between procerssing
-  // and InvenSense DMP)
-  float[] axis = quat.toAxisAngle();
-  rotate(axis[0], -axis[1], axis[3], axis[2]);
-  // update the axis based on feed from sensor
-  // test manual updates
-  quat.set(q[0], q[1], q[2], q[3]);
-  ------------------------------------------------------------------------------------
-  */
+
   // translate wheel on plane
-  stroke(255,0,0);
+  stroke(255, 0, 0);
   line(-500, 1400/scale, 0, 500, 1400/scale, 0);
   // color and define strokes for presentation
   stroke(200);
   fill(0, 200, 0);
-  
-/*
-  // rotate wheel for analysis
-  rotateY(sensorFeed[0]);
-  rotateX(sensorFeed[1]*2);
-  rotateZ(sensorFeed[2]);
-*/
 
-// wheel
+  // rotate wheel for analysis
+  rotateY(yaw);
+  rotateX(pitch);
+  rotateZ(roll);
+
+  recvWithStartEndMarkers();
+  if (newData == true) {
+    //println(receivedChars);
+    String sensorFeed = new String(receivedChars);
+    println(sensorFeed);
+    // split val into yaw, pitch and roll
+    String[] splitFeed = sensorFeed.split(",");
+    yaw = Float.parseFloat(splitFeed[0]);
+    pitch = Float.parseFloat(splitFeed[1]);
+    roll = Float.parseFloat(splitFeed[2]);
+    // print it out in the console for debugging
+    println("Yaw: " +yaw +" Pitch: " +pitch +" Roll: " +roll);
+
+    newData = false;
+  }
+
+  // wheel
   wheel(mouseX, positionY);
-  
+
   // increament angel of rotation when mouseX incerases (degrees)
-  if(pmouseX < mouseX) {
+  if (pmouseX < mouseX) {
     angleWheel+=2;
     // send angle of rotation 
     // Enter data in this style <37.6, 12.09, 24.7>
@@ -107,7 +109,7 @@ void draw() {
     //println("Positive Wheel Angle: " +angleWheel +"\n");
   }
   // decreament angle of rotation when mouseX decreases (degrees)
-  if(pmouseX > mouseX) {
+  if (pmouseX > mouseX) {
     angleWheel-=2;
     // send angle of rotation 
     // Enter data in this style <37.6, 12.09, 24.7>
@@ -117,20 +119,21 @@ void draw() {
     //println("mouseX: " +mouseX);
     //println("Negative Wheel Angle: " +angleWheel +"\n");
   }
-  
+  /*
   // rotate entire wheel plane
-  sensorFeed[0]+=PI/120;
-  sensorFeed[1]+=PI/120;
-  sensorFeed[2]+=PI/120;
+   yaw+=PI/120;
+   pitch+=PI/120;
+   roll+=PI/120;
+   */
 }
 
 /** Draw Wheel
-*/
-void wheel(float positionX, float positionY){
+ */
+void wheel(float positionX, float positionY) {
   // save current position of coordinate system
   pushMatrix();
   // move coordinat system based on the mouses's X position and fixed at the defined Y
-  translate(positionX,positionY);
+  translate(positionX, positionY);
   // rotate coordinate in radians
   rotate(radians(angleWheel));
   // draw wheels outer frame/tyre
@@ -227,3 +230,51 @@ void drawSpoke(float radius, float spokeX, float spokeY, float depth) {
   }
   endShape();
 }
+
+/**
+ *  Recieve data based on markers
+ */
+void recvWithStartEndMarkers() {
+  // ensure currently red data is not preempted by incoming data
+  boolean recvInProgress = false;
+  // recieve data from first index
+  byte ndx = 0;
+  // define start marker
+  char startMarker = '[';
+  // define end marker
+  char endMarker = ']';
+  // variable to represent each character
+  char rc;
+
+  // while there is no new data but values exist on the serial line,
+  // read the available values
+  while (myPort.available() > 0 && newData == false) {
+    rc = myPort.readChar();
+    // if values are being read,
+    if (recvInProgress == true) {
+      //  and your are not at the end marker,
+      if (rc != endMarker) {
+        // store the read values to the first recieved-index,
+        receivedChars[ndx] = rc;
+        // then move to the next index
+        ++ndx;
+        // make sure the received character is bound by the desired char limit
+        if (ndx >= numChars) {
+          ndx = numChars -1;
+        }
+      } else { // when the end-of marker is noticed
+        // terminate the string
+        //receivedChars[ndx] = '\0';
+        // notify that receiving has elapsed
+        recvInProgress = false;
+        // reset index for next data to be recieved
+        ndx = 0;
+        // notify that recieved data is available
+        newData = true;
+      }
+    } else if (rc == startMarker) {
+      // define the start of recieving data once a start-marker is noticed
+      recvInProgress = true;
+    }
+  }
+} // eof recvWithStartEndMarkers
