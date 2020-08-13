@@ -70,7 +70,24 @@ void setup() {
 //============
 
 void loop() {
-  //
+  // Acceleration Readings
+  // read normalized values
+  Vector normAccel = mpu.readNormalizeAccel();
+
+  // Output values with x-axis as reference plane
+  // TO DO: No need sending x & z values
+  Serial.print("[");
+  Serial.print(normAccel.YAxis);/*
+  Serial.print(",");
+  Serial.print(normAccel.YAxis);
+  Serial.print(",");
+  Serial.print(normAccel.ZAxis);*/
+  Serial.print("]");
+  
+  delay(800);
+  
+  /*// Uncomment this if you want to use gyroscope readings
+  // For Gyroscope Readings
   timer = millis();
   // Read normalized values
   Vector normGyro = mpu.readNormalizeGyro();
@@ -91,7 +108,7 @@ void loop() {
   
   // wait to full timeStep period so we don't drive ourselves crazy
   delay((timeStep*1000) - (millis() - timer));
-
+*/
   
   recvWithStartEndMarkers();
   if (newData == true) {

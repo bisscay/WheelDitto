@@ -72,12 +72,13 @@ void draw() {
   // color and define strokes for presentation
   stroke(200);
   fill(0, 200, 0);
-
+/*
   // rotate wheel for analysis
   rotateY(yaw);
   rotateX(pitch);
   rotateZ(roll);
-
+*/
+  // get feed from serial line
   recvWithStartEndMarkers();
   if (newData == true) {
     //println(receivedChars);
@@ -90,7 +91,12 @@ void draw() {
     roll = Float.parseFloat(splitFeed[2]);
     // print it out in the console for debugging
     println("Yaw: " +yaw +" Pitch: " +pitch +" Roll: " +roll);
-
+    // modify wheel sim position
+    if(yaw > 0)
+      angleWheel+=2;
+    if(yaw < 0)
+      angleWheel-=2;
+    
     newData = false;
   }
 
