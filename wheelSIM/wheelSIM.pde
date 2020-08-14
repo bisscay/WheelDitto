@@ -1,4 +1,4 @@
-/**  References:
+/**  References: //<>//
  *    https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
  *    https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html
  *    https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels
@@ -11,6 +11,8 @@ Serial myPort;
 float angleWheel;
 // TO DO: All initializations should be done in setup
 float positionY = height-113; // define height of plane
+// define wheel's translation
+float positionX;
 // to control the wheel's scale
 float scale = 15;
 // for generating vertex
@@ -20,11 +22,13 @@ int pts = 120;
 // defines the depth of the wheel
 float CONE_DEPTH = 200;
 
+float x, y, z;
+
 /* ToProcessing Params */
 // data received from the serial port
 String sensorFeed = "";
 // for whole shape rotation
-float yaw, pitch, roll;
+float yaw, pitch, roll, pYaw;
 // desired character limit
 final byte numChars = 32;
 // defines when a new data stream arives
@@ -33,6 +37,8 @@ boolean newData = false;
 char[] receivedChars = new char[numChars];
 // temporary array for use when parsing
 char[] tempChars = new char[numChars];
+//
+int sensorTranslation = 0;
 
 void setup() {
   // window size
@@ -72,12 +78,14 @@ void draw() {
   // color and define strokes for presentation
   stroke(200);
   fill(0, 200, 0);
-/*
-  // rotate wheel for analysis
-  rotateY(yaw);
-  rotateX(pitch);
-  rotateZ(roll);
-*/
+
+  if (mousePressed && (mouseButton == RIGHT)) {
+    // rotate wheel for analysis
+    rotateY(x);
+    rotateX(y);
+    rotateZ(z);
+  }
+
   // get feed from serial line
   recvWithStartEndMarkers();
   if (newData == true) {
@@ -86,51 +94,79 @@ void draw() {
     println(sensorFeed);
     // split val into yaw, pitch and roll
     String[] splitFeed = sensorFeed.split(",");
+    // assign current yaw
     yaw = Float.parseFloat(splitFeed[0]);
-    pitch = Float.parseFloat(splitFeed[1]);
-    roll = Float.parseFloat(splitFeed[2]);
+    //pitch = Float.parseFloat(splitFeed[1]);
+    //roll = Float.parseFloat(splitFeed[2]);
     // print it out in the console for debugging
     println("Yaw: " +yaw +" Pitch: " +pitch +" Roll: " +roll);
-    // modify wheel sim position
-    if(yaw > 0)
-      angleWheel+=2;
-    if(yaw < 0)
-      angleWheel-=2;
-    
+
     newData = false;
   }
 
   // wheel
-  wheel(mouseX, positionY);
+  wheel(positionX, positionY);
 
-  // increament angel of rotation when mouseX incerases (degrees)
-  if (pmouseX < mouseX) {
-    angleWheel+=2;
-    // send angle of rotation 
-    // Enter data in this style <37.6, 12.09, 24.7>
-    myPort.write("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
-    // for debugging, delete later
-    println("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
-    //println("mouseX: " +mouseX);
-    //println("Positive Wheel Angle: " +angleWheel +"\n");
+  // if the mouse is held down, control goes to mouse
+  if (mousePressed && (mouseButton == LEFT)) {
+    // increament angel of rotation when mouseX incerases (degrees)
+    if (pmouseX < mouseX) {
+      //wheel(mouseX, positionY);
+      positionX = mouseX;
+      angleWheel+=2;
+      // send angle of rotation 
+      // Enter data in this style <37.6, 12.09, 24.7>
+      myPort.write("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
+      // for debugging, delete later
+      //println("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
+      println("mouseX: " +mouseX);
+      //println("Positive Wheel Angle: " +angleWheel +"\n");
+    }
+    // else keep wheel at mouse constant point if sensor stops moving
+    else if ((pmouseX == mouseX) && !(yaw == pYaw)) {
+      //wheel(mouseX, positionY);
+      positionX = mouseX;
+    }
+    // else decreament angle of rotation when mouseX decreases (degrees)
+    else if (pmouseX > mouseX) {
+      //wheel(mouseX, positionY);
+      positionX = mouseX;
+      angleWheel-=2;
+      // send angle of rotation 
+      // Enter data in this style <37.6, 12.09, 24.7>
+      myPort.write("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
+      // for debugging, delete later
+      //println("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
+      println("-mouseX: " +mouseX);
+      //println("Negative Wheel Angle: " +angleWheel +"\n");
+    }
   }
-  // decreament angle of rotation when mouseX decreases (degrees)
-  if (pmouseX > mouseX) {
-    angleWheel-=2;
-    // send angle of rotation 
-    // Enter data in this style <37.6, 12.09, 24.7>
-    myPort.write("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
-    // for debugging, delete later
-    println("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
-    //println("mouseX: " +mouseX);
-    //println("Negative Wheel Angle: " +angleWheel +"\n");
+  // else control goes to the sensor
+  else {
+    // modify wheel sim position
+    if ((yaw > pYaw) && (mouseX == pmouseX)) { // 1.2 was the sensor reference point at this test stage
+      angleWheel+=5;
+      //wheel(yaw*100, positionY);
+      positionX = yaw*100;
+    }
+    if ((yaw == pYaw) && !(mouseX == pmouseX)) {
+      //angleWheel-=2;
+      //wheel(yaw*100, positionY);
+      positionX = yaw*100;
+    }
+    if ((yaw < pYaw) && (mouseX == pmouseX)) {
+      angleWheel-=5;
+      //wheel(yaw*100, positionY);
+      positionX = yaw * 100;
+    }
+    // store current yaw before new yaw is assigned
+    pYaw = yaw;
   }
-  /*
+
   // rotate entire wheel plane
-   yaw+=PI/120;
-   pitch+=PI/120;
-   roll+=PI/120;
-   */
+  x+=PI/120;
+  y+=PI/120;
+  z+=PI/120;
 }
 
 /** Draw Wheel

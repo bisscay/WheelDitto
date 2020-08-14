@@ -73,18 +73,6 @@ void loop() {
   // Acceleration Readings
   // read normalized values
   Vector normAccel = mpu.readNormalizeAccel();
-
-  // Output values with x-axis as reference plane
-  // TO DO: No need sending x & z values
-  Serial.print("[");
-  Serial.print(normAccel.YAxis);/*
-  Serial.print(",");
-  Serial.print(normAccel.YAxis);
-  Serial.print(",");
-  Serial.print(normAccel.ZAxis);*/
-  Serial.print("]");
-  
-  delay(800);
   
   /*// Uncomment this if you want to use gyroscope readings
   // For Gyroscope Readings
@@ -150,8 +138,19 @@ void loop() {
     //showParsedData();
 
     newData = false;
+  } else {
+    // Output values with x-axis as reference plane
+    // TO DO: No need sending x & z values
+    Serial.print("[");
+    Serial.print(normAccel.YAxis);/*
+    Serial.print(",");
+    Serial.print(normAccel.YAxis);
+    Serial.print(",");
+    Serial.print(normAccel.ZAxis);*/
+    Serial.print("]");
+    
+    delay(800);
   }
-
 }
 
 // Check for the boundary markers that define new data i.e < >
