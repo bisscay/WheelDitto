@@ -107,13 +107,13 @@ void draw() {
   // wheel
   wheel(positionX, positionY);
 
-  // if the mouse is held down, control goes to mouse
+  // if the mouse is held down, wheel x-translation control goes to mouse
   if (mousePressed && (mouseButton == LEFT)) {
     // increament angel of rotation when mouseX incerases (degrees)
     if (pmouseX < mouseX) {
       //wheel(mouseX, positionY);
       positionX = mouseX;
-      angleWheel+=2;
+      angleWheel+=1;
       // send angle of rotation 
       // Enter data in this style <37.6, 12.09, 24.7>
       myPort.write("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
@@ -121,17 +121,17 @@ void draw() {
       //println("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
       println("mouseX: " +mouseX);
       //println("Positive Wheel Angle: " +angleWheel +"\n");
-    }
+    }/* // No need for this seeing that control has beeen transfered to mouse
     // else keep wheel at mouse constant point if sensor stops moving
     else if ((pmouseX == mouseX) && !(yaw == pYaw)) {
       //wheel(mouseX, positionY);
       positionX = mouseX;
-    }
+    }*/
     // else decreament angle of rotation when mouseX decreases (degrees)
     else if (pmouseX > mouseX) {
       //wheel(mouseX, positionY);
       positionX = mouseX;
-      angleWheel-=2;
+      angleWheel-=1;
       // send angle of rotation 
       // Enter data in this style <37.6, 12.09, 24.7>
       myPort.write("<" +angleWheel +", " +(float)pmouseX +", " +(float)mouseX +">");
@@ -163,7 +163,7 @@ void draw() {
     pYaw = yaw;
   }
 
-  // rotate entire wheel plane
+  // rotate entire wheel plane for analysis
   x+=PI/120;
   y+=PI/120;
   z+=PI/120;
