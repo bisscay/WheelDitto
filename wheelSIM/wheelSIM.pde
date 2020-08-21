@@ -3,6 +3,11 @@
  *    https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html
  *    https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels
  */
+// wheelSIM.
+// Sketch for wheel simulation controlling servo and being controlled by MPU6050 sensor
+// Author: Bissallah Ekele Jr.
+// Date:   15/08/2020
+
 import processing.serial.*;
 
 // create object from serial class
@@ -55,7 +60,7 @@ void setup() {
   String portName = Serial.list()[0]; // 0 in linux | 2 on mac
   // define rate of data transfer
   myPort = new Serial(this, portName, 115200);
-}
+}// eof setup()
 
 void draw() {
   background(0);
@@ -122,11 +127,11 @@ void draw() {
       println("mouseX: " +mouseX);
       //println("Positive Wheel Angle: " +angleWheel +"\n");
     }/* // No need for this seeing that control has beeen transfered to mouse
-    // else keep wheel at mouse constant point if sensor stops moving
-    else if ((pmouseX == mouseX) && !(yaw == pYaw)) {
-      //wheel(mouseX, positionY);
-      positionX = mouseX;
-    }*/
+     // else keep wheel at mouse constant point if sensor stops moving
+     else if ((pmouseX == mouseX) && !(yaw == pYaw)) {
+     //wheel(mouseX, positionY);
+     positionX = mouseX;
+     }*/
     // else decreament angle of rotation when mouseX decreases (degrees)
     else if (pmouseX > mouseX) {
       //wheel(mouseX, positionY);
@@ -167,9 +172,14 @@ void draw() {
   x+=PI/120;
   y+=PI/120;
   z+=PI/120;
-}
+}// eof draw()
 
-/** Draw Wheel
+/** wheel(positionX, positionY)
+ *  Draw desired wheel
+ *  
+ *  param: float positionX - wheel's x reference
+ *         float positionY - wheel's y reference in scene
+ *  return: void
  */
 void wheel(float positionX, float positionY) {
   // save current position of coordinate system
@@ -209,9 +219,16 @@ void wheel(float positionX, float positionY) {
   drawSpoke(90/scale, (0/scale), 0, -1460/scale);
   //restore coordinate system to initial position before translation
   popMatrix();
-}
+}// eof wheel
 
-/** Draw cone's top cap
+/** drawTopCap(radius, coneX, coneY, depth)
+ *  Draw cone's top cap
+ *
+ *  param: float radius - radius of the cap
+ *         float coneX - cap's x position in scene
+ *         float coneY - cap's y position in scene
+ *         float depth - cap's depth 
+ *  return: void
  */
 void drawTopCap(float radius, float coneX, float coneY, float depth) {
   //fill(0,0,0);
@@ -223,9 +240,16 @@ void drawTopCap(float radius, float coneX, float coneY, float depth) {
     ang+=360/pts;
   }
   endShape();
-} 
+}// eof drawTopCap
 
-/** Draw cone's bottom cap
+/** drawBottomCap(radius, coneX, coneY, depth)
+ *  Draw cone's bottom cap
+ *
+ *  param: float radius - 
+ *         float coneX - 
+ *         float coneY -
+ *         float depth -
+ *  return: void
  */
 void drawBottomCap(float radius, float coneX, float coneY, float depth) {
   //fill(0,0,0);
@@ -237,9 +261,16 @@ void drawBottomCap(float radius, float coneX, float coneY, float depth) {
     ang+=360/pts;
   }
   endShape();
-} 
+}// eof drawBottomCap
 
-/** Draw cones based on position and diameter
+/** drawCone(radius, coneX, coneY, coneZ)
+ *  Draw cones based on position and diameter
+ *
+ *  param: float radius - 
+ *         float coneX - 
+ *         float coneY -
+ *         float coneZ -
+ *  return: void
  */
 void drawCone(float radius, float coneX, float coneY, float coneZ) {
   //body
@@ -252,9 +283,16 @@ void drawCone(float radius, float coneX, float coneY, float coneZ) {
     ang+=360/pts;
   }
   endShape();
-}
+}// eof drawCone
 
-/** Draw hollow spokes
+/** drawSpoke(radius, spokeX, spokeY, depth)
+ *  Draw hollow spokes
+ *
+ *  param: float radius - 
+ *         float spokeX - 
+ *         float spokeY -
+ *         float depth -
+ *  return: void
  */
 void drawSpoke(float radius, float spokeX, float spokeY, float depth) {
   //translate(-1800,0,0);
@@ -271,10 +309,12 @@ void drawSpoke(float radius, float spokeX, float spokeY, float depth) {
     ang+=360/pts;
   }
   endShape();
-}
+}// eof drawSpoke
 
-/**
- *  Recieve data based on markers
+/** recvWithStartEndMarkers()
+ *  Recieve data based on markers '[' and ']'
+ *  
+ *  return: void
  */
 void recvWithStartEndMarkers() {
   // ensure currently red data is not preempted by incoming data
