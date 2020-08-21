@@ -1,7 +1,7 @@
 /**References:
- * https://forum.arduino.cc/index.php?topic=396450.0
- * https://www.youtube.com/watch?v=XCyRXMvVSCw
- * https://www.instructables.com/id/MPU-6050-Tutorial-How-to-Program-MPU-6050-With-Ard/
+ * Robin2 (2016) ‘Serial Input Basics - Updated’ available: https://forum.arduino.cc/index.php?topic=396450.0 [accessed: 18/08/2020, 15:40]
+ * DroneBot Workshop (2019) ‘Build a Digital Level with MPU-6050 AND Arduino’ available: https://dronebotworkshop.com/mpu-6050-level/ [accessed: 16/08/2020, 11:48].
+ * DroneBot Workshop (2018) ‘Using Servo Motors with the Arduino’ available: https://dronebotworkshop.com/servo-motors-with-arduino/ [accessed: 17/08/2020, 10:06].
  */
 
 #include <Servo.h>

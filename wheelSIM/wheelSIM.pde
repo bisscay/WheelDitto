@@ -1,7 +1,7 @@
 /**  References: //<>//
- *    https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
- *    https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html
- *    https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels
+ *    Chrisir (2014) ‘How to shoot points and rotate wheels’ available: https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels [accessed: 18/08/2020, 15:19]
+ *    b_e_n (2013) ‘Connecting Arduino to Processing’ available: https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all  [accessed: 18/08/2020, 15:23]
+ *    apex_nd (2020) ‘Draw a cone/cylinder in P3D’ available: https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html [accessed: 18/08/2020, 15:29]
  */
 import processing.serial.*;
 
