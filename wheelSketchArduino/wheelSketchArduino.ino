@@ -3,6 +3,10 @@
  * DroneBot Workshop (2019) ‘Build a Digital Level with MPU-6050 AND Arduino’ available: https://dronebotworkshop.com/mpu-6050-level/ [accessed: 16/08/2020, 11:48].
  * DroneBot Workshop (2018) ‘Using Servo Motors with the Arduino’ available: https://dronebotworkshop.com/servo-motors-with-arduino/ [accessed: 17/08/2020, 10:06].
  */
+// wheelSketchArduino.pde
+// Sketch for MPU6050 IMU and Servo motor linked to  wheel simulation in processing
+// Author: Bissallah Ekele Jr.
+// Date:   15/08/2020
 
 #include <Servo.h>
 #include <Wire.h>
@@ -43,8 +47,6 @@ float pitch = 0;
 float roll = 0;
 float yaw = 0;
 
-//============
-
 void setup() {
   // initialize serial communications at a 115200 baud rate
   Serial.begin(115200);
@@ -65,9 +67,7 @@ void setup() {
   mpu.setThreshold(3);
   // Check settings for debugging
   //checkSettings();
-}
-
-//============
+}// eof setup
 
 void loop() {
   // Acceleration Readings
@@ -151,10 +151,13 @@ void loop() {
     
     delay(800);
   }
-}
+}// eof loop
 
-// Check for the boundary markers that define new data i.e < >
-
+/**recvWithStartEndMarkers()
+ * Check for the boundary markers that define new data i.e < >
+ * 
+ * return void
+ */
 void recvWithStartEndMarkers() {
   // ensure that currently read data is not prompted if a new data arrives faster that read is comlpeted
   static boolean recvInProgress = false;
@@ -198,27 +201,33 @@ void recvWithStartEndMarkers() {
   }
 } // eof recvWithStartEndMarkers
 
-//============
-
-void parseData() {      // split the recieved data into its parts
-
-  char * strtokIndx; // this is used by strtok() as an index
-
-  strtokIndx = strtok(tempChars, ",");     // get the first part - the string
-  xAxis = atof(strtokIndx); // copy it to an xAxis float
-
-  strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
-  pMouseX = atof(strtokIndx);     // convert this part to a pMouseX float
+/**parseData()
+ * split the recieved data into its parts
+ * 
+ * return void
+ */
+void parseData() {     
+  // used by strtok() as an index
+  char * strtokIndx; 
+  // get the first part - the string
+  strtokIndx = strtok(tempChars, ",");     
+  // copy it to an xAxis float
+  xAxis = atof(strtokIndx); 
+  // continue where the previous call left off
+  strtokIndx = strtok(NULL, ","); 
+  // convert this part to a pMouseX float
+  pMouseX = atof(strtokIndx);     
 
   strtokIndx = strtok(NULL, ",");
-  mouseX = atof(strtokIndx);     // convert this part to a mouseX float
+  // convert this part to a mouseX float
+  mouseX = atof(strtokIndx);     
 
-}
+}// eof parseData
 
-//============
-
-/**
+/**checkSettings()
  * Check settings for debugging
+ * 
+ * return void
  */
 void checkSettings()
 {
@@ -256,4 +265,4 @@ void checkSettings()
   Serial.println(mpu.getGyroOffsetZ());
   
   Serial.println();
-}
+}// eof checkSettings

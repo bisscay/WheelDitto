@@ -1,9 +1,9 @@
-/**  References: //<>//
- *    Chrisir (2014) ‘How to shoot points and rotate wheels’ available: https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels [accessed: 18/08/2020, 15:19]
- *    b_e_n (2013) ‘Connecting Arduino to Processing’ available: https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all  [accessed: 18/08/2020, 15:23]
- *    apex_nd (2020) ‘Draw a cone/cylinder in P3D’ available: https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html [accessed: 18/08/2020, 15:29]
+/**References: //<>//
+ * Chrisir (2014) ‘How to shoot points and rotate wheels’ available: https://forum.processing.org/two/discussion/4047/how-to-shoot-points-and-rotate-wheels [accessed: 18/08/2020, 15:19]
+ * b_e_n (2013) ‘Connecting Arduino to Processing’ available: https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all  [accessed: 18/08/2020, 15:23]
+ * apex_nd (2020) ‘Draw a cone/cylinder in P3D’ available: https://forum.processing.org/one/topic/draw-a-cone-cylinder-in-p3d.html [accessed: 18/08/2020, 15:29]
  */
-// wheelSIM.
+// wheelSIM.pde
 // Sketch for wheel simulation controlling servo and being controlled by MPU6050 sensor
 // Author: Bissallah Ekele Jr.
 // Date:   15/08/2020
@@ -177,9 +177,9 @@ void draw() {
 /** wheel(positionX, positionY)
  *  Draw desired wheel
  *  
- *  param: float positionX - wheel's x reference
- *         float positionY - wheel's y reference in scene
- *  return: void
+ *  @param: float positionX - wheel's x reference
+ *          float positionY - wheel's y reference in scene
+ *  @return: void
  */
 void wheel(float positionX, float positionY) {
   // save current position of coordinate system
@@ -224,11 +224,11 @@ void wheel(float positionX, float positionY) {
 /** drawTopCap(radius, coneX, coneY, depth)
  *  Draw cone's top cap
  *
- *  param: float radius - radius of the cap
+ *  @param: float radius - radius of the cap
  *         float coneX - cap's x position in scene
  *         float coneY - cap's y position in scene
  *         float depth - cap's depth 
- *  return: void
+ *  @return: void
  */
 void drawTopCap(float radius, float coneX, float coneY, float depth) {
   //fill(0,0,0);
@@ -245,11 +245,11 @@ void drawTopCap(float radius, float coneX, float coneY, float depth) {
 /** drawBottomCap(radius, coneX, coneY, depth)
  *  Draw cone's bottom cap
  *
- *  param: float radius - 
- *         float coneX - 
- *         float coneY -
- *         float depth -
- *  return: void
+ *  @param: float radius - cap's base span 
+ *          float coneX - x position in scene
+ *          float coneY - y position in scene
+ *          float depth - cap's depth
+ *  @return: void
  */
 void drawBottomCap(float radius, float coneX, float coneY, float depth) {
   //fill(0,0,0);
@@ -266,11 +266,11 @@ void drawBottomCap(float radius, float coneX, float coneY, float depth) {
 /** drawCone(radius, coneX, coneY, coneZ)
  *  Draw cones based on position and diameter
  *
- *  param: float radius - 
- *         float coneX - 
- *         float coneY -
- *         float coneZ -
- *  return: void
+ *  @param: float radius - cap's base span
+ *          float coneX - x position in scene
+ *          float coneY - y position in scene
+ *          float coneZ - cap's depth
+ *  @return: void
  */
 void drawCone(float radius, float coneX, float coneY, float coneZ) {
   //body
@@ -288,10 +288,10 @@ void drawCone(float radius, float coneX, float coneY, float coneZ) {
 /** drawSpoke(radius, spokeX, spokeY, depth)
  *  Draw hollow spokes
  *
- *  param: float radius - 
- *         float spokeX - 
- *         float spokeY -
- *         float depth -
+ *  param: float radius - cone's base span
+ *         float spokeX - x position in scene
+ *         float spokeY - y position in scene
+ *         float depth - cone's depth
  *  return: void
  */
 void drawSpoke(float radius, float spokeX, float spokeY, float depth) {
