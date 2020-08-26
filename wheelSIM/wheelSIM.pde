@@ -45,6 +45,9 @@ char[] tempChars = new char[numChars];
 //
 int sensorTranslation = 0;
 
+// ================================================================
+// ===                      INITIAL SETUP                       ===
+// ================================================================
 void setup() {
   // window size
   size(700, 700, P3D);
@@ -62,6 +65,9 @@ void setup() {
   myPort = new Serial(this, portName, 115200);
 }// eof setup()
 
+// ================================================================
+// ===                    MAIN PROGRAM LOOP                     ===
+// ================================================================
 void draw() {
   background(0);
   // center of the scene

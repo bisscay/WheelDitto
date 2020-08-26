@@ -3,7 +3,7 @@
  * DroneBot Workshop (2019) ‘Build a Digital Level with MPU-6050 AND Arduino’ available: https://dronebotworkshop.com/mpu-6050-level/ [accessed: 16/08/2020, 11:48].
  * DroneBot Workshop (2018) ‘Using Servo Motors with the Arduino’ available: https://dronebotworkshop.com/servo-motors-with-arduino/ [accessed: 17/08/2020, 10:06].
  */
-// wheelSketchArduino.pde
+// wheelSketchArduino.ino
 // Sketch for MPU6050 IMU and Servo motor linked to  wheel simulation in processing
 // Author: Bissallah Ekele Jr.
 // Date:   15/08/2020
@@ -47,6 +47,9 @@ float pitch = 0;
 float roll = 0;
 float yaw = 0;
 
+// ================================================================
+// ===                      INITIAL SETUP                       ===
+// ================================================================
 void setup() {
   // initialize serial communications at a 115200 baud rate
   Serial.begin(115200);
@@ -69,6 +72,9 @@ void setup() {
   //checkSettings();
 }// eof setup
 
+// ================================================================
+// ===                    MAIN PROGRAM LOOP                     ===
+// ================================================================
 void loop() {
   // Acceleration Readings
   // read normalized values
@@ -139,12 +145,12 @@ void loop() {
 
     newData = false;
   } else {
-    // Output values with x-axis as reference plane
-    // TO DO: No need sending x & z values
+    // Output values with IMU'S y-plane as reference
+    // TO DO: No need sending x & z values for accelerometer readings
     Serial.print("[");
     Serial.print(normAccel.YAxis);/*
     Serial.print(",");
-    Serial.print(normAccel.YAxis);
+    Serial.print(normAccel.XAxis);
     Serial.print(",");
     Serial.print(normAccel.ZAxis);*/
     Serial.print("]");
